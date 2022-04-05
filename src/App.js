@@ -1,23 +1,29 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState, useEffect } from "react";
+import "./App.css";
+import BasicTable from "./basicTable";
 
 function App() {
+  const [coins, setCoins] = useState([]);
+  const [filteredCoins, setFilteredCoins] = useState(coins);
+
+  useEffect(() => {
+    fetch(
+      "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=false"
+    )
+      .then((response) => response.json())
+      .then((coins) => setCoins(coins));
+  }, []);
+
+  useEffect(() => {
+    const newFilteredCoins = coins.splice(0, 30);
+    console.log(newFilteredCoins);
+    setFilteredCoins(newFilteredCoins);
+  }, []);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <title>Cryptocurrency Prices by Market Cap</title>
+      <BasicTable coins={filteredCoins} />
     </div>
   );
 }
